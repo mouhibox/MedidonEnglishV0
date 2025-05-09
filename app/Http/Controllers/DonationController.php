@@ -2,54 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ad;
-use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Stripe\Stripe;
+use Stripe\Charge;
 
-
-class AdController extends Controller
+class DonationController extends Controller
 {
-    public function index()
+    public function createPaymentForm()
     {
-        $ads = Ad::orderBy('created_at', 'desc')->with('category')->get();;
-        return view('ads.index', compact('ads'));
+        return view('donations.payment');
     }
 
-    public function store(Request $request)
+    public function processPayment(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required',
-            'image' => 'nullable|image|max:2048',
-            'category_id' => 'required|exists:categories,id',
-            'status' => 'required|string',
-            'location' => 'required|string',
-            'availability' => 'required|string',
+            'amount' => 'required|numeric|min:1',
+            'stripeToken' => 'required',
         ]);
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('ads', 'public');
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            Charge::create([
+                'amount' => $request->amount * 100,
+                'currency' => 'usd',
+                'source' => $request->stripeToken,
+                'description' => 'Donation Payment',
+            ]);
+
+            return back()->with('success', 'Thank you for your donation!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Payment error: ' . $e->getMessage());
         }
-
-        Ad::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $imagePath,
-            'category_id' => $request->category_id,
-            'status' => $request->status,
-            'location' => $request->location,
-            'availability' => $request->availability,
-            'user_id' => Auth::id(),
-        ]);
-
-        return redirect()->route('ads.index')->with('success', 'Ad created successfully.');
-    }
-
-    public function create()
-    {
-        $categories = Category::all();
-        return view('ads.create', compact('categories'));
     }
 }

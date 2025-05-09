@@ -128,6 +128,7 @@ class AuthController extends Controller
             'new_password' => 'required|confirmed|min:6',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if (!Hash::check($request->current_password, $user->password)) {
@@ -157,6 +158,7 @@ class AuthController extends Controller
     // Update user profile
     public function updateProfile(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $request->validate([

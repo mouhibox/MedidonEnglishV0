@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('type')->default(0)->comment('0 = Particulier, 1 = Organisation');
+            // Increase the length of the avatar column to 2048 characters
+            $table->string('avatar', 2048)->change();
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('type');
+            // Revert back to the original size of the avatar column (if needed)
+            $table->string('avatar', 255)->change();
         });
     }
 };

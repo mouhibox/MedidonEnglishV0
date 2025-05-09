@@ -17,8 +17,10 @@ return new class extends Migration {
             $table->string('image')->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('status');
-            $table->string('location');
-            $table->string('availability');
+            $table->string('location')->nullable();
+            $table->string('availability')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('brand_name')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

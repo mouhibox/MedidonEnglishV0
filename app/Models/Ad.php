@@ -7,8 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Ad extends Model
 {
     protected $fillable = [
-        'title', 'description', 'image', 'category_id',
-        'status', 'location', 'availability', 'user_id',
+        'title',
+        'description',
+        'image',
+        'category_id',
+        'status',
+        'location',
+        'availability',
+        'user_id',
     ];
 
     // Relations
